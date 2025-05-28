@@ -1,0 +1,72 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "retrieve",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "newValue",
+						"type": "string"
+					}
+				],
+				"name": "store",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"iot-comparison/contracts/HelloWorld.sol": "HelloWorld"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"iot-comparison/contracts/HelloWorld.sol": {
+			"keccak256": "0x79d7878faddd9a248c630caab3a4e1ae143eb4db1fae54702a79bd5df61537c6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9b1179e243c1c954dab7356cb5eaafebe6263b20464cc603b1a834fc125a7352",
+				"dweb:/ipfs/QmPgmUjE3kCPd41wtXJGko2dejNqEXpsiJEwWhWk6Rh1dx"
+			]
+		}
+	},
+	"version": 1
+}
