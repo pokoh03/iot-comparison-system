@@ -20,11 +20,8 @@ contract TraditionalIoT {
 
     function recordData(string memory deviceId, uint256 value) public {
         require(devices[deviceId].owner == msg.sender, "Unauthorized");
-
         devices[deviceId].lastValue = value;
-
         devices[deviceId].timestamp = block.timestamp;
-
         emit DataRecorded(deviceId, value, block.timestamp);
     }
 }

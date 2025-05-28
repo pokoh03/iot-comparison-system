@@ -1,37 +1,18 @@
 const {composeAPI} = require('@iota/core')
 
-const {asciiToTrytes} = require('@iota/converter')
-
-const {MamFactory} = require('@iota/mam.js')
-
-const crypto = require('crypto')
-
-const iota = composeAPI({provider: 'https://nodes.iota.org:443'})
-
-const seed = crypto.randomBytes(81).toString('hex')
-
-const mam = MamFactory.create(iota, seed)
-
+// Mock function - replace with real IOTA publishing
 async function publishData(deviceId, value) {
-    const message = {
-        deviceId,
-
-        value,
-
-        timestamp: Date.now(),
-    }
-
-    const trytes = asciiToTrytes(JSON.stringify(message))
-
-    const {state, payload, root} = await mam.attach(trytes, 3, 9)
-
-    return {
-        root,
-
-        messageId: payload[0].hash,
-
-        bundleHash: payload[0].bundle,
-    }
+    return new Promise((resolve) => {
+        // Simulate network delay
+        setTimeout(() => {
+            resolve({
+                success: true,
+                messageId: `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .substring(2, 10)}`,
+            })
+        }, 100) // 100ms delay simulation
+    })
 }
 
-module.exports = {publishData, seed}
+module.exports = {publishData}
