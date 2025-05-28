@@ -6,9 +6,12 @@ async function main() {
 
     const TraditionalIoT = await ethers.getContractFactory('TraditionalIoT')
     const iot = await TraditionalIoT.deploy()
-    await iot.deployed()
 
-    console.log('TraditionalIoT deployed to:', iot.address)
+    // In ethers v6, use waitForDeployment() instead of deployed()
+    await iot.waitForDeployment()
+
+    // Use .target instead of .address in ethers v6
+    console.log('TraditionalIoT deployed to:', iot.target)
 }
 
 main()
