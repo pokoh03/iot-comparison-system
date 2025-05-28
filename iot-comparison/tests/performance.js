@@ -38,7 +38,7 @@ describe('Performance Comparison', function () {
                 .verifyIotaData(
                     'device2',
                     i,
-                    ethers.utils.formatBytes32String(`proof-${i}`)
+                    ethers.utils.encodeBytes32String(`proof-${i}`)
                 )
         }
         const duration = Date.now() - start
