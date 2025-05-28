@@ -33,13 +33,12 @@ describe('Performance Comparison', function () {
 
         const start = Date.now()
         for (let i = 0; i < 10; i++) {
+            // Use ethers.encodeBytes32String instead of ethers.utils.formatBytes32String
+            const proof = ethers.encodeBytes32String(`proof-${i}`)
+
             await blockchainIoTA
                 .connect(oracle)
-                .verifyIotaData(
-                    'device2',
-                    i,
-                    ethers.utils.encodeBytes32String(`proof-${i}`)
-                )
+                .verifyIotaData('device2', i, proof)
         }
         const duration = Date.now() - start
 
