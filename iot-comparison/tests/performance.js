@@ -71,5 +71,18 @@ describe('IoT Performance Benchmark', function () {
                                                                                                                                                                                                                             `)
     })
 
+    module.exports = {
+          traditional: {
+              latency: parseFloat(metrics.latency),
+                  tps: parseFloat(metrics.tps),
+                      energy: parseFloat(metrics.energy.split(' ')[0])
+                        },
+                          blockchain: {
+                              latency: parseFloat(metrics.latency),
+                                  tps: parseFloat(metrics.tps),
+                                      energy: parseFloat(metrics.energy.split(' ')[0])
+                                        }
+    }
+
   
 })
