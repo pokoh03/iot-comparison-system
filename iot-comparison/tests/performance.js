@@ -1,4 +1,5 @@
 const {ethers} = require('hardhat')
+const asciichart = require('asciichart')
 
 describe('IoT Performance Benchmark', function () {
     this.timeout(60000)
@@ -69,4 +70,29 @@ describe('IoT Performance Benchmark', function () {
                                                                                                                                                                                                                         Energy Used: ${metrics.energy}
                                                                                                                                                                                                                             `)
     })
+
+    // Display in table format
+    console.log('\n📊 IoT Performance Benchmark Table\n')
+    console.table(metrics)
+
+    // Generate data series for visualization
+    const tpsData = metrics.map((m) => m.TPS)
+    const latencyData = metrics.map((m) => m.latencyPerTx)
+    const energyData = metrics.map((m) => m.energyUsed)
+
+    // Create labels
+    const labels = metrics.map((m) => m.system)
+
+    // Display charts
+    console.log('\n📈 TPS Comparison\n')
+    console.log(asciichart.plot(tpsData, {height: 10}))
+    console.log(labels.join(' '.repeat(10)))
+
+    console.log('\n⏱️ Latency (ms) Comparison\n')
+    console.log(asciichart.plot(latencyData, {height: 10}))
+    console.log(labels.join(' '.repeat(10)))
+
+    console.log('\n⚡ Energy Usage (kWh) Comparison\n')
+    console.log(asciichart.plot(energyData, {height: 10}))
+    console.log(labels.join(' '.repeat(10)))
 })
