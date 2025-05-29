@@ -1,14 +1,12 @@
 const {ethers} = require('hardhat')
-const asciichart = require('asciichart')
 
-describe('IoT Performance Benchmark', function () {
-    this.timeout(60000)
-    const TRANSACTION_COUNT = 10
+// Real-world constraints
+const BLOCK_TIME = 12000 // Ethereum's ~12s block time (Sepolia)
+const NETWORK_DELAY = 50 // ms (simulated WAN latency)
+const ETH_ENERGY_PER_TX = 0.01 // kWh (PoS estimate)
+const IOT_ENERGY_PER_TX = 0.000005 // kWh (LoRaWAN)
 
-    // Energy constants (approximate)
-    const ETH_TX_ENERGY = 0.1 // kWh per Ethereum tx (testnet estimate)
-    const IOT_TX_ENERGY = 0.0001 // kWh per traditional IoT tx
-
+describe('IoT Performance Benchmark (Realistic)', () => {
     let traditionalIoT, blockchainIoTA
     let owner, oracle
 
@@ -23,55 +21,103 @@ describe('IoT Performance Benchmark', function () {
         blockchainIoTA = await BlockchainIoTA.deploy(oracle.address)
     })
 
-    
-
-    const calculateMetrics = (startTime, endTime, energyPerTx) => {
-        const totalTime = endTime - startTime
-        return {
-            latency: (totalTime / TRANSACTION_COUNT).toFixed(2) + 'ms',
-            tps: (TRANSACTION_COUNT / (totalTime / 1000)).toFixed(2),
-            energy: (TRANSACTION_COUNT * energyPerTx).toFixed(6) + ' kWh',
-        }
+    // Simulate network delay
+    const simulateNetwork = async (action) => {
+        await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY))
+        return action()
     }
 
-    it('Traditional IoT Performance', async () => {
+    // Realistic blockchain tx with forced block time
+    const realisticBlockchainTx = async (contract, ...args) => {
+        const start = Date.now()
+        const tx = await contract(...args)
+        await tx.wait() // Force block inclusion
+        const duration = Date.now() - start
+        return Math.max(duration, BLOCK_TIME)
+    }
+
+    it('Traditional IoT (Real Network Conditions)', async () => {
         await traditionalIoT.registerDevice('device1')
 
+        const latencies = []
         const start = Date.now()
-        for (let i = 0; i < TRANSACTION_COUNT; i++) {
-            await traditionalIoT.recordData('device1', i)
+
+        for (let i = 0; i < 10; i++) {
+            const txStart = Date.now()
+            await simulateNetwork(() => traditionalIoT.recordData('device1', i))
+            latencies.push(Date.now() - txStart)
         }
-        const metrics = calculateMetrics(start, Date.now(), IOT_TX_ENERGY)
+
+        const totalTime = Date.now() - start
+        const avgLatency =
+            latencies.reduce((a, b) => a + b, 0) / latencies.length
 
         console.log(`
-                                                                                                                                [Traditional IoT]
-                                                                                                                                    Transactions: ${TRANSACTION_COUNT}
-                                                                                                                                        Latency/tx: ${metrics.latency}
-                                                                                                                                            TPS: ${metrics.tps}
-                                                                                                                                                Energy Used: ${metrics.energy}
-                                                                                                                                                    `)
+                                                                                                                                                        [Traditional IoT - Realistic]
+                                                                                                                                                            Transactions: 10
+                                                                                                                                                                Avg Latency: ${avgLatency.toFixed(
+                                                                                                                                                                    2
+                                                                                                                                                                )}ms
+                                                                                                                                                                    TPS: ${(
+                                                                                                                                                                        10 /
+                                                                                                                                                                        (totalTime /
+                                                                                                                                                                            1000)
+                                                                                                                                                                    ).toFixed(
+                                                                                                                                                                        2
+                                                                                                                                                                    )}
+                                                                                                                                                                        Energy: ${(
+                                                                                                                                                                            10 *
+                                                                                                                                                                            IOT_ENERGY_PER_TX
+                                                                                                                                                                        ).toExponential(
+                                                                                                                                                                            2
+                                                                                                                                                                        )} kWh
+                                                                                                                                                                            `)
     })
 
-    it('Blockchain-IoTA Performance', async () => {
+    it('Blockchain-IoTA (Realistic)', async () => {
         await blockchainIoTA.registerDevice('device2')
 
+        const latencies = []
         const start = Date.now()
-        for (let i = 0; i < TRANSACTION_COUNT; i++) {
-            const proof = ethers.encodeBytes32String(`proof-${i}`)
-            await blockchainIoTA
-                .connect(oracle)
-                .verifyIotaData('device2', i, proof)
+
+        for (let i = 0; i < 10; i++) {
+            const txStart = Date.now()
+            const duration = await realisticBlockchainTx(() =>
+                blockchainIoTA.connect(oracle).verifyIotaData(
+                    'device2',
+                    i,
+                    ethers.ZeroHash // Simulated proof
+                )
+            )
+            latencies.push(duration)
         }
-        const metrics = calculateMetrics(start, Date.now(), ETH_TX_ENERGY)
+
+        const totalTime = Date.now() - start
+        const avgLatency =
+            latencies.reduce((a, b) => a + b, 0) / latencies.length
 
         console.log(`
-                                                                                                                                                                                                        [Blockchain-IoTA]
-                                                                                                                                                                                                            Transactions: ${TRANSACTION_COUNT}
-                                                                                                                                                                                                                Latency/tx: ${metrics.latency}
-                                                                                                                                                                                                                    TPS: ${metrics.tps}
-                                                                                                                                                                                                                        Energy Used: ${metrics.energy}
-                                                                                                                                                                                                                            `)
+                                                                                                                                                                                                                                                                                                          [Blockchain-IoTA - Realistic]
+                                                                                                                                                                                                                                                                                                              Transactions: 10
+                                                                                                                                                                                                                                                                                                                  Avg Latency: ${(
+                                                                                                                                                                                                                                                                                                                      avgLatency /
+                                                                                                                                                                                                                                                                                                                      1000
+                                                                                                                                                                                                                                                                                                                  ).toFixed(
+                                                                                                                                                                                                                                                                                                                      2
+                                                                                                                                                                                                                                                                                                                  )}s
+                                                                                                                                                                                                                                                                                                                      TPS: ${(
+                                                                                                                                                                                                                                                                                                                          10 /
+                                                                                                                                                                                                                                                                                                                          (totalTime /
+                                                                                                                                                                                                                                                                                                                              1000)
+                                                                                                                                                                                                                                                                                                                      ).toFixed(
+                                                                                                                                                                                                                                                                                                                          2
+                                                                                                                                                                                                                                                                                                                      )}
+                                                                                                                                                                                                                                                                                                                          Energy: ${(
+                                                                                                                                                                                                                                                                                                                              10 *
+                                                                                                                                                                                                                                                                                                                              ETH_ENERGY_PER_TX
+                                                                                                                                                                                                                                                                                                                          ).toFixed(
+                                                                                                                                                                                                                                                                                                                              6
+                                                                                                                                                                                                                                                                                                                          )} kWh
+                                                                                                                                                                                                                                                                                                                              `)
     })
-
-    
 })
