@@ -23,6 +23,13 @@ describe('IoT Performance Benchmark', function () {
         blockchainIoTA = await BlockchainIoTA.deploy(oracle.address)
     })
 
+    const metrics = {
+        latency: latencyPerTx,
+        tps: tps,
+        energy: energyUsed,
+        transactions: TRANSACTION_COUNT,
+    }
+
     const calculateMetrics = (startTime, endTime, energyPerTx) => {
         const totalTime = endTime - startTime
         return {
@@ -72,17 +79,15 @@ describe('IoT Performance Benchmark', function () {
     })
 
     module.exports = {
-          traditional: {
-              latency: parseFloat(metrics.latency),
-                  tps: parseFloat(metrics.tps),
-                      energy: parseFloat(metrics.energy.split(' ')[0])
-                        },
-                          blockchain: {
-                              latency: parseFloat(metrics.latency),
-                                  tps: parseFloat(metrics.tps),
-                                      energy: parseFloat(metrics.energy.split(' ')[0])
-                                        }
+        traditional: {
+            latency: parseFloat(metrics.latency),
+            tps: parseFloat(metrics.tps),
+            energy: parseFloat(metrics.energy.split(' ')[0]),
+        },
+        blockchain: {
+            latency: parseFloat(metrics.latency),
+            tps: parseFloat(metrics.tps),
+            energy: parseFloat(metrics.energy.split(' ')[0]),
+        },
     }
-
-  
 })
