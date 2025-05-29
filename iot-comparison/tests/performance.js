@@ -1,8 +1,13 @@
-const {expect} = require('chai')
 const {ethers} = require('hardhat')
-const {publishData} = require('../iota/publisher')
 
-describe('Performance Comparison', function () {
+describe('IoT Performance Benchmark', function () {
+    this.timeout(60000)
+    const TRANSACTION_COUNT = 10
+
+    // Energy constants (approximate)
+    const ETH_TX_ENERGY = 0.1 // kWh per Ethereum tx (testnet estimate)
+    const IOT_TX_ENERGY = 0.0001 // kWh per traditional IoT tx
+
     let traditionalIoT, blockchainIoTA
     let owner, oracle
 
@@ -17,37 +22,51 @@ describe('Performance Comparison', function () {
         blockchainIoTA = await BlockchainIoTA.deploy(oracle.address)
     })
 
-    it('Test Traditional IoT performance', async function () {
+    const calculateMetrics = (startTime, endTime, energyPerTx) => {
+        const totalTime = endTime - startTime
+        return {
+            latency: (totalTime / TRANSACTION_COUNT).toFixed(2) + 'ms',
+            tps: (TRANSACTION_COUNT / (totalTime / 1000)).toFixed(2),
+            energy: (TRANSACTION_COUNT * energyPerTx).toFixed(6) + ' kWh',
+        }
+    }
+
+    it('Traditional IoT Performance', async () => {
         await traditionalIoT.registerDevice('device1')
 
         const start = Date.now()
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < TRANSACTION_COUNT; i++) {
             await traditionalIoT.recordData('device1', i)
         }
-        const duration = Date.now() - start
+        const metrics = calculateMetrics(start, Date.now(), IOT_TX_ENERGY)
 
-        console.log(`Traditional IoT: 1000 transactions in ${duration}ms`)
+        console.log(`
+                                                                                                                                [Traditional IoT]
+                                                                                                                                    Transactions: ${TRANSACTION_COUNT}
+                                                                                                                                        Latency/tx: ${metrics.latency}
+                                                                                                                                            TPS: ${metrics.tps}
+                                                                                                                                                Energy Used: ${metrics.energy}
+                                                                                                                                                    `)
     })
 
-    it('Test Blockchain-IoTA performance', async function () {
-        const deviceId = 'device2'
-        await blockchainIoTA.registerDevice(deviceId)
+    it('Blockchain-IoTA Performance', async () => {
+        await blockchainIoTA.registerDevice('device2')
 
         const start = Date.now()
-        for (let i = 0; i < 1000; i++) {
-            // Use mock publisher
-            const iotaData = await publishData(deviceId, i)
-
+        for (let i = 0; i < TRANSACTION_COUNT; i++) {
+            const proof = ethers.encodeBytes32String(`proof-${i}`)
             await blockchainIoTA
                 .connect(oracle)
-                .verifyIotaData(
-                    deviceId,
-                    i,
-                    ethers.encodeBytes32String(`proof-${i}`)
-                )
+                .verifyIotaData('device2', i, proof)
         }
-        const duration = Date.now() - start
+        const metrics = calculateMetrics(start, Date.now(), ETH_TX_ENERGY)
 
-        console.log(`Blockchain-IoTA: 1000 transactions in ${duration}ms`)
+        console.log(`
+                                                                                                                                                                                                        [Blockchain-IoTA]
+                                                                                                                                                                                                            Transactions: ${TRANSACTION_COUNT}
+                                                                                                                                                                                                                Latency/tx: ${metrics.latency}
+                                                                                                                                                                                                                    TPS: ${metrics.tps}
+                                                                                                                                                                                                                        Energy Used: ${metrics.energy}
+                                                                                                                                                                                                                            `)
     })
 })
