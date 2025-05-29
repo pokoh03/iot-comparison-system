@@ -44,12 +44,12 @@ describe('IoT Performance Benchmark', function () {
         const metrics = calculateMetrics(start, Date.now(), IOT_TX_ENERGY)
 
         console.log(`
-         [Traditional IoT]
-         Transactions: ${TRANSACTION_COUNT}
-          Latency/tx: ${metrics.latency}
-          TPS: ${metrics.tps}
-          Energy Used: ${metrics.energy}
-        `)
+                                                                                                                                [Traditional IoT]
+                                                                                                                                    Transactions: ${TRANSACTION_COUNT}
+                                                                                                                                        Latency/tx: ${metrics.latency}
+                                                                                                                                            TPS: ${metrics.tps}
+                                                                                                                                                Energy Used: ${metrics.energy}
+                                                                                                                                                    `)
     })
 
     it('Blockchain-IoTA Performance', async () => {
@@ -65,13 +65,24 @@ describe('IoT Performance Benchmark', function () {
         const metrics = calculateMetrics(start, Date.now(), ETH_TX_ENERGY)
 
         console.log(`
-          [Blockchain-IoTA]
-          Transactions: ${TRANSACTION_COUNT}
-          Latency/tx: ${metrics.latency}
-          TPS: ${metrics.tps}
-          Energy Used: ${metrics.energy}
-           `)
+                                                                                                                                                                                                        [Blockchain-IoTA]
+                                                                                                                                                                                                            Transactions: ${TRANSACTION_COUNT}
+                                                                                                                                                                                                                Latency/tx: ${metrics.latency}
+                                                                                                                                                                                                                    TPS: ${metrics.tps}
+                                                                                                                                                                                                                        Energy Used: ${metrics.energy}
+                                                                                                                                                                                                                            `)
     })
 
-    
+    module.exports = {
+        traditional: {
+            latency: parseFloat(metrics.latency),
+            tps: parseFloat(metrics.tps),
+            energy: parseFloat(metrics.energy.split(' ')[0]),
+        },
+        blockchain: {
+            latency: parseFloat(metrics.latency),
+            tps: parseFloat(metrics.tps),
+            energy: parseFloat(metrics.energy.split(' ')[0]),
+        },
+    }
 })
