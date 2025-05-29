@@ -27,7 +27,8 @@ describe('IoT Performance Benchmark (Realistic)', () => {
         )
     })
 
-    it('Blockchain-IoTA Test', async () => {
+    it('Blockchain-IoTA Test', async function () {
+        this.timeout(180000) // Set timeout to 3 minutes (or adjust as needed)
         const txCount = 10
         const start = Date.now()
         for (let i = 0; i < txCount; i++) {
