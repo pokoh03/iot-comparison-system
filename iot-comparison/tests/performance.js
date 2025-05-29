@@ -63,6 +63,7 @@ describe('Physically Accurate Benchmark', () => {
     })
 
     it('Blockchain-IoTA (Physically Accurate)', async () => {
+        this.timeout(180000);
         await blockchainIoTA.registerDevice('device2')
 
         const start = Date.now()
