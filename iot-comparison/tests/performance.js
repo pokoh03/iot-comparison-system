@@ -21,12 +21,12 @@ describe('Performance Comparison', function () {
         await traditionalIoT.registerDevice('device1')
 
         const start = Date.now()
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1000; i++) {
             await traditionalIoT.recordData('device1', i)
         }
         const duration = Date.now() - start
 
-        console.log(`Traditional IoT: 10 transactions in ${duration}ms`)
+        console.log(`Traditional IoT: 1000 transactions in ${duration}ms`)
     })
 
     it('Test Blockchain-IoTA performance', async function () {
@@ -34,7 +34,7 @@ describe('Performance Comparison', function () {
         await blockchainIoTA.registerDevice(deviceId)
 
         const start = Date.now()
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 1000; i++) {
             // Use mock publisher
             const iotaData = await publishData(deviceId, i)
 
@@ -48,6 +48,6 @@ describe('Performance Comparison', function () {
         }
         const duration = Date.now() - start
 
-        console.log(`Blockchain-IoTA: 10 transactions in ${duration}ms`)
+        console.log(`Blockchain-IoTA: 1000 transactions in ${duration}ms`)
     })
 })
