@@ -1,10 +1,10 @@
 const {ethers} = require('hardhat')
 
 // Real-world constraints
-const BLOCK_TIME = 12000 // Ethereum's ~12s block time (Sepolia)
-const NETWORK_DELAY = 50 // ms (simulated WAN latency)
-const ETH_ENERGY_PER_TX = 0.01 // kWh (PoS estimate)
-const IOT_ENERGY_PER_TX = 0.000005 // kWh (LoRaWAN)
+const BLOCK_TIME = 12000 
+const NETWORK_DELAY = 50 
+const ETH_ENERGY_PER_TX = 0.01 
+const IOT_ENERGY_PER_TX = 0.000005 
 
 describe('IoT Performance Benchmark (Realistic)', () => {
     let traditionalIoT, blockchainIoTA
@@ -13,7 +13,6 @@ describe('IoT Performance Benchmark (Realistic)', () => {
     before(async () => {
         ;[owner, oracle] = await ethers.getSigners()
 
-        // Deploy contracts
         const TraditionalIoT = await ethers.getContractFactory('TraditionalIoT')
         traditionalIoT = await TraditionalIoT.deploy()
 
@@ -21,17 +20,15 @@ describe('IoT Performance Benchmark (Realistic)', () => {
         blockchainIoTA = await BlockchainIoTA.deploy(oracle.address)
     })
 
-    // Simulate network delay
     const simulateNetwork = async (action) => {
         await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY))
         return action()
     }
 
-    // Realistic blockchain tx with forced block time
     const realisticBlockchainTx = async (contract, ...args) => {
         const start = Date.now()
         const tx = await contract(...args)
-        await tx.wait() // Force block inclusion
+        await tx.wait() 
         const duration = Date.now() - start
         return Math.max(duration, BLOCK_TIME)
     }
@@ -53,7 +50,7 @@ describe('IoT Performance Benchmark (Realistic)', () => {
             latencies.reduce((a, b) => a + b, 0) / latencies.length
 
         console.log(`
-                                                                                                                                                        [Traditional IoT - Realistic]
+                                                                                                                                                        [Traditional IoT]
                                                                                                                                                             Transactions: 10
                                                                                                                                                                 Avg Latency: ${avgLatency.toFixed(
                                                                                                                                                                     2
@@ -86,7 +83,7 @@ describe('IoT Performance Benchmark (Realistic)', () => {
                 blockchainIoTA.connect(oracle).verifyIotaData(
                     'device2',
                     i,
-                    ethers.ZeroHash // Simulated proof
+                    ethers.ZeroHash 
                 )
             )
             latencies.push(duration)
@@ -97,7 +94,7 @@ describe('IoT Performance Benchmark (Realistic)', () => {
             latencies.reduce((a, b) => a + b, 0) / latencies.length
 
         console.log(`
-                                                                                                                                                                                                                                                                                                          [Blockchain-IoTA - Realistic]
+                                                                                                                                                                                                                                                                                                          [Blockchain-IoTA]
                                                                                                                                                                                                                                                                                                               Transactions: 10
                                                                                                                                                                                                                                                                                                                   Avg Latency: ${(
                                                                                                                                                                                                                                                                                                                       avgLatency /
