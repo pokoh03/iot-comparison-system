@@ -8,10 +8,10 @@ const BlockchainIoTA = require('../artifacts/contracts/BlockchainIoTA.sol/Blockc
 
 const ETH_RPC_URL = 'http://localhost:8545'
 
-const CONTRACT_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' // Update with actual address
+const CONTRACT_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' 
 
 const ORACLE_PK =
-    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' // Hardhat account 0 private key
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
 
 // Device tracking
 
@@ -42,7 +42,6 @@ async function main() {
                 )
 
                 for (const message of messages) {
-                    // For simplicity, we skip signature verification in this example
 
                     const tx = await contract.verifyIotaData(
                         deviceId,
@@ -57,9 +56,9 @@ async function main() {
                             ethers.utils.toUtf8Bytes(message.bundleHash)
                         ),
 
-                        3, // confirmations
+                        3, 
 
-                        '0x' // signature placeholder
+                        '0x' 
                     )
 
                     console.log(
@@ -67,7 +66,6 @@ async function main() {
                     )
                 }
 
-                // Update last root to the latest
 
                 if (messages.length) {
                     devices[deviceId].lastRoot =
@@ -77,7 +75,7 @@ async function main() {
                 console.error(`Error processing device ${deviceId}:`, error)
             }
         }
-    }, 30000) // Poll every 30 seconds
+    }, 30000) 
 }
 
 main().catch(console.error)

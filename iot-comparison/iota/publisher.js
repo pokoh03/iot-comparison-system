@@ -1,7 +1,6 @@
 // iota/publisher.js - Mock implementation
 const {ethers} = require('ethers')
 
-// Mock function for testing - replace with real IOTA publishing in production
 async function publishData(deviceId, value) {
     return {
         messageId: ethers.encodeBytes32String(`msg-${Date.now()}`),
